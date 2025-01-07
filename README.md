@@ -17,7 +17,7 @@ const handleNext = async () => items.push(...[Math.random()]);
 </script>
 
 <InfiniteScroll className="size-64 border-2 border-current" throttleMs={50} onNextChunk={handleNext}>
-{#each items as item (Math.random())}
+{#each items as item (item)}
 <div>{item}</div>
 {/each}
 </InfiniteScroll>
