@@ -11,9 +11,9 @@
 		onNextChunk = async () => {},
 		scrollX = false,
 		scrollY = true,
-		thresholdBack = 100, // in px
-		thresholdNext = 100, // in px
-		throttleMs = 250, // in ms
+		thresholdBack = 60, // in px
+		thresholdNext = 60, // in px
+		throttleMs = 150, // in ms
 		...props
 	}: {
 		children: Snippet;
@@ -32,12 +32,7 @@
 		thresholdBack?: number;
 		thresholdNext?: number;
 		throttleMs?: number;
-		className?: string;
 	} & HTMLAttributes<any> = $props();
-
-	const scrollByXStyle = scrollX ? 'overflow-x-scroll' : '';
-	const scrollByYStyle = scrollY ? 'overflow-y-scroll' : '';
-	const scrollStyle = `${scrollByXStyle} ${scrollByYStyle}`;
 
 	type AbstractScrollDirection = 'back' | 'stay' | 'next';
 
@@ -112,14 +107,14 @@
 		currentScrollBot: number;
 	} => {
 		const currentScrollTop = target.scrollTop;
-		const currentScrollBot = target.scrollTop + target.offsetHeight;
+		const currentScrollBot = target.scrollTop + target.clientHeight;
 
 		return { currentScrollTop, currentScrollBot };
 	};
 
 	const getMaxScroll = (target: HTMLElement): { scrollTopMax: number; scrollBotMax: number } => {
 		const scrollTopMax = thresholdBack;
-		const scrollBotMax = target.scrollHeight - target.clientHeight - thresholdNext;
+		const scrollBotMax = target.scrollHeight - thresholdNext;
 
 		return { scrollTopMax, scrollBotMax };
 	};
@@ -143,6 +138,13 @@
 	const unlockScrollHandler = () => (scrollHandlerBlock = false);
 </script>
 
-<div class="{scrollStyle} {props?.className}" {...props} onscroll={handleScroll} bind:this={rootEl}>
+<div
+	{...props}
+	class={props?.class}
+	class:overflow-x-scroll={scrollX}
+	class:overflow-y-scroll={scrollY}
+	onscroll={handleScroll}
+	bind:this={rootEl}
+>
 	{@render children()}
 </div>
