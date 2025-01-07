@@ -1,7 +1,11 @@
 {
 	"name": "infinite-scroll-svelte",
 	"license": "MIT",
-	"version": "0.0.3",
+	"version": "0.0.4",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/rust1cean/infinite-scroll-svelte.git"
+	},
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run package",
