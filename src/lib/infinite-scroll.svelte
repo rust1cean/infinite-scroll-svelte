@@ -1,5 +1,5 @@
 <!-- TODO: Scroll by X -->
-<!-- TODO: Unblockers if tasks take a long time to complete -->
+<!-- TODO: Unlock if tasks take a long time to complete -->
 
 <script lang="ts">
 	import { type Snippet } from 'svelte';
@@ -7,13 +7,13 @@
 
 	const {
 		children,
-		onScrollBack,
-		onScrollNext,
+		onPrevChunk = async () => {},
+		onNextChunk = async () => {},
 		scrollX = false,
 		scrollY = true,
-		thresholdBack = 120, // in px
-		thresholdNext = 120, // in px
-		throttleMs = 1, // in ms
+		thresholdBack = 100, // in px
+		thresholdNext = 100, // in px
+		throttleMs = 250, // in ms
 		...props
 	}: {
 		children: Snippet;
@@ -23,8 +23,8 @@
 		 * The scroll event will be blocked
 		 * until one of the methods is executed.
 		 */
-		onScrollBack: () => Promise<any>;
-		onScrollNext: () => Promise<any>;
+		onPrevChunk?: () => Promise<any>;
+		onNextChunk?: () => Promise<any>;
 		// IMPORTANT
 
 		scrollX?: boolean;
@@ -47,7 +47,6 @@
 	let rootEl: HTMLElement | undefined;
 
 	const handleScroll = (event: Event) => {
-		console.log(scrollHandlerBlock);
 		const nextThrottleUntil = getMaybeNextThrottle(nextUpdateTime);
 		if (!nextThrottleUntil || scrollHandlerBlock) return;
 		nextUpdateTime = nextThrottleUntil;
@@ -82,7 +81,7 @@
 			}
 
 			blockScrollHandler();
-			await onScrollBack();
+			await onPrevChunk();
 
 			const currfirstElChild = rootEl?.firstElementChild as HTMLElement | undefined;
 			if (rootEl && firstElChild && currfirstElChild) {
@@ -99,7 +98,7 @@
 		}
 		if (scrollDirection === 'next' && currentScrollBot >= scrollBotMax) {
 			blockScrollHandler();
-			await onScrollNext();
+			await onNextChunk();
 		}
 
 		unlockScrollHandler();
@@ -120,7 +119,7 @@
 
 	const getMaxScroll = (target: HTMLElement): { scrollTopMax: number; scrollBotMax: number } => {
 		const scrollTopMax = thresholdBack;
-		const scrollBotMax = target.scrollHeight - thresholdNext;
+		const scrollBotMax = target.scrollHeight - target.clientHeight - thresholdNext;
 
 		return { scrollTopMax, scrollBotMax };
 	};
@@ -144,6 +143,6 @@
 	const unlockScrollHandler = () => (scrollHandlerBlock = false);
 </script>
 
-<div {...props} class="{scrollStyle} {props?.className}" onscroll={handleScroll} bind:this={rootEl}>
+<div class="{scrollStyle} {props?.className}" {...props} onscroll={handleScroll} bind:this={rootEl}>
 	{@render children()}
 </div>
