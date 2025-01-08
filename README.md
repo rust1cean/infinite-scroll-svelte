@@ -6,6 +6,10 @@ Wrapper that fires events when the user has scrolled it to the beginning or end
 
 - All keys must be unique
 
+## Important
+
+The `onPrevChunk` and `onNextChunk` scroll events will be blocked until the previous ones are executed
+
 ## Props
 
 - **onPrevChunk**: *async fn()* - this event occurs when the user scrolls the container to the top
