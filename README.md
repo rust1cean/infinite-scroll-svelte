@@ -38,7 +38,7 @@ The `onPrevChunk` and `onNextChunk` scroll events will be blocked until the prev
 </script>
 
 <InfiniteScroll
-	className="size-64 border-2 border-current"
+	class="size-64 border-2 border-current"
 	throttleMs={50}
 	onNextChunk={handleNext}
 >
