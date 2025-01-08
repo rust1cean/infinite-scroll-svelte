@@ -11,9 +11,12 @@
 		onNextChunk = async () => {},
 		scrollX = false,
 		scrollY = true,
-		thresholdBack = 60, // in px
-		thresholdNext = 60, // in px
+		thresholdBack = 120, // in px
+		thresholdNext = 120, // in px
 		throttleMs = 150, // in ms
+		timeoutFailSecs = 5, // in secs
+		onError = () => {},
+		onFinally = () => {},
 		...props
 	}: {
 		children: Snippet;
@@ -32,7 +35,12 @@
 		thresholdBack?: number;
 		thresholdNext?: number;
 		throttleMs?: number;
+		timeoutFailSecs?: number;
+		onError?: (error: Error) => any;
+		onFinally?: () => any;
 	} & HTMLAttributes<any> = $props();
+
+	const ONE_SECOND: number = 1000;
 
 	type AbstractScrollDirection = 'back' | 'stay' | 'next';
 
@@ -40,6 +48,10 @@
 	let lastScrollPosition: number = 0;
 	let scrollHandlerBlock: boolean = false;
 	let rootEl: HTMLElement | undefined;
+	let scrollDepth: number = 0;
+
+	const decreaseScrollDepth = () => (scrollDepth -= 1);
+	const increaseScrollDepth = () => (scrollDepth += 1);
 
 	const handleScroll = (event: Event) => {
 		const nextThrottleUntil = getMaybeNextThrottle(nextUpdateTime);
@@ -62,42 +74,53 @@
 	};
 
 	const possibleCallAtThreshold = async (target: HTMLElement) => {
-		const { currentScrollTop, currentScrollBot } = getCurrentScroll(target);
-		const { scrollTopMax, scrollBotMax } = getMaxScroll(target);
+		try {
+			const { currentScrollTop, currentScrollBot } = getCurrentScroll(target);
+			const { scrollTopMax, scrollBotMax } = getMaxScroll(target);
 
-		const scrollDirection = getAbstractScrollDirection(currentScrollTop);
+			const scrollDirection = getAbstractScrollDirection(currentScrollTop);
 
-		if (scrollDirection === 'back' && currentScrollTop <= scrollTopMax) {
-			const firstElChild = rootEl?.firstElementChild as HTMLElement | undefined;
-			const tmpId = genRandomId();
+			if (scrollDirection === 'back' && currentScrollTop <= scrollTopMax && scrollDepth > 0) {
+				decreaseScrollDepth();
 
-			if (firstElChild) {
-				setElementDataId(firstElChild, tmpId);
+				const firstElChild = rootEl?.firstElementChild as HTMLElement | undefined;
+				const tmpId = genRandomId();
+
+				if (firstElChild) {
+					setElementDataId(firstElChild, tmpId);
+				}
+
+				blockScrollHandler();
+				await callWithTimeoutFailWrapper(onPrevChunk);
+
+				const currfirstElChild = rootEl?.firstElementChild as HTMLElement | undefined;
+				if (rootEl && firstElChild && currfirstElChild) {
+					const prevfirstElChild = getElementByDataId(tmpId) as HTMLElement;
+					const prevOffsetTop = prevfirstElChild.offsetTop;
+					const currOffsetTop = currfirstElChild.offsetTop;
+
+					rootEl.scrollTo({
+						top: prevOffsetTop - currOffsetTop
+					});
+
+					removeElementDataId(firstElChild);
+				}
+			}
+			if (scrollDirection === 'next' && currentScrollBot >= scrollBotMax) {
+				increaseScrollDepth();
+
+				blockScrollHandler();
+				await callWithTimeoutFailWrapper(onNextChunk);
 			}
 
-			blockScrollHandler();
-			await onPrevChunk();
-
-			const currfirstElChild = rootEl?.firstElementChild as HTMLElement | undefined;
-			if (rootEl && firstElChild && currfirstElChild) {
-				const prevfirstElChild = getElementByDataId(tmpId) as HTMLElement;
-				const prevOffsetTop = prevfirstElChild.offsetTop;
-				const currOffsetTop = currfirstElChild.offsetTop;
-
-				rootEl.scrollTo({
-					top: prevOffsetTop - currOffsetTop
-				});
-
-				removeElementDataId(firstElChild);
-			}
+			lastScrollPosition = currentScrollTop;
+		} catch (error) {
+			console.error(error);
+			onError(error as Error);
+		} finally {
+			unlockScrollHandler();
+			onFinally();
 		}
-		if (scrollDirection === 'next' && currentScrollBot >= scrollBotMax) {
-			blockScrollHandler();
-			await onNextChunk();
-		}
-
-		unlockScrollHandler();
-		lastScrollPosition = currentScrollTop;
 	};
 
 	const getCurrentScroll = (
@@ -136,6 +159,19 @@
 
 	const blockScrollHandler = () => (scrollHandlerBlock = true);
 	const unlockScrollHandler = () => (scrollHandlerBlock = false);
+
+	const callWithTimeoutFailWrapper = (fn: () => Promise<any>) => {
+		return new Promise((res, rej) => {
+			const finalTimeout = timeoutFailSecs * ONE_SECOND;
+			const timer = setTimeout(() => {
+				rej(new Error(`Promise timed out after ${timeoutFailSecs} second(s).\n${fn}`));
+			}, finalTimeout);
+
+			fn()
+				.then(res)
+				.finally(() => clearTimeout(timer));
+		});
+	};
 </script>
 
 <div
