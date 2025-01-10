@@ -18,14 +18,14 @@
 		thresholdPrev = 120, // in px
 		thresholdNext = 120, // in px
 		throttleInMs = 150,
-		promiseTimeoutInSecs = 5,
+		promiseRejctTimeoutInSecs = 5,
 		onError = () => {},
 		onFinally = () => {},
 		...props
 	}: {
 		children: Snippet;
 		throttleInMs?: number;
-		promiseTimeoutInSecs?: number;
+		promiseRejctTimeoutInSecs?: number;
 
 		// IMPORTANT
 		/**
@@ -111,7 +111,7 @@
 		const prevChild = rootEl?.firstElementChild as HTMLElement | undefined;
 		const childId = prevChild == null ? null : markElementByRandomId(prevChild);
 
-		await promiseWithRejectTimeout(onPrev, promiseTimeoutInSecs);
+		await promiseWithRejectTimeout(onPrev, promiseRejctTimeoutInSecs);
 
 		const currChild = rootEl?.firstElementChild as HTMLElement | undefined;
 		if (rootEl && prevChild && childId && currChild) {
@@ -130,7 +130,7 @@
 	const onThresholdNext = async () => {
 		increaseScrollDepth();
 
-		await promiseWithRejectTimeout(onNext, promiseTimeoutInSecs);
+		await promiseWithRejectTimeout(onNext, promiseRejctTimeoutInSecs);
 	};
 
 	const getAbstractScrollDirection = (currentScrollTop: number): AbstractScrollDirection => {

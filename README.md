@@ -2,17 +2,15 @@
 
 Wrapper that fires events when the user has scrolled it to the beginning or end
 
-## Working conditions
-
-- All keys must be unique
-
 ## Important
 
-`onPrev` and `onNext` **will block** the event handler until one of the them completes.
+- All set keys inside `<InfiniteScroll />` must be unique, otherwise auto-scrolling will not work
 
-Before you begin, the first and last elements are temporarily marked with \[data-infinite-scroll-xxxxx\] identifiers for internal work, so **only sequence elements should be inside** `<InfiniteScroll />`:
+- `onPrev` and `onNext` **will block** the event handler until one of the them completes.
 
-### Incorrect usage
+- First and last elements are temporarily marked with \[data-infinite-scroll-xxxxx\] identifiers for internal work, so **only sequence elements should be inside** `<InfiniteScroll>`:
+
+Incorrect
 
 ```svelte
 <InfiniteScroll>
@@ -23,7 +21,7 @@ Before you begin, the first and last elements are temporarily marked with \[data
 </InfiniteScroll>
 ```
 
-### Correct usage
+Correct
 
 ```svelte
 <SomeWrapper>
@@ -48,7 +46,7 @@ Before you begin, the first and last elements are temporarily marked with \[data
 | `thresholdPrevInPx?` (in pixels)     | `number`                 | `120`       | Container start threshold for calling `onPrev`                                                                              |
 | `thresholdNext?` (in pixels)         | `number`                 | `120`       | Container end threshold for calling `onNext`                                                                                |
 | `throttleInMs?` (in milliseconds)    | `number`                 | `150`       | Interval between `onscroll` event calls                                                                                     |
-| `promiseTimeoutInSecs?` (in seconds) | `number`                 | `5`         | Tthe maximum time to wait for the `onPrev` and `onNext` functions, if the timeout is exceeded, the onError event will occur |
+| `promiseRejctTimeoutInSecs?` (in seconds) | `number`                 | `5`         | Tthe maximum time to wait for the `onPrev` and `onNext` functions, if the timeout is exceeded, the onError event will occur |
 | `onError?`                           | `(error: Error) => void` | `() => {}`  | Fires when one of the `onPrev` or `onNext` functions fails                                                                  |
 | `onFinally?`                         | `() => void`             | `() => {}`  | Fires when one of the `onPrev` or `onNext` functions completes (good tone for hiding the loading)                           |
 | `...props?`                          | `HTMLAttributes`         | `undefined` | HTML element attributes                                                                                                     |
