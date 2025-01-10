@@ -46,7 +46,7 @@ Correct
 | `thresholdPrevInPx?` (in pixels)     | `number`                 | `120`       | Container start threshold for calling `onPrev`                                                                              |
 | `thresholdNext?` (in pixels)         | `number`                 | `120`       | Container end threshold for calling `onNext`                                                                                |
 | `throttleInMs?` (in milliseconds)    | `number`                 | `150`       | Interval between `onscroll` event calls                                                                                     |
-| `promiseRejctTimeoutInSecs?` (in seconds) | `number`                 | `5`         | Tthe maximum time to wait for the `onPrev` and `onNext` functions, if the timeout is exceeded, the onError event will occur |
+| `promiseRejectTimeoutInSecs?` (in seconds) | `number`                 | `5`         | Tthe maximum time to wait for the `onPrev` and `onNext` functions, if the timeout is exceeded, the onError event will occur |
 | `onError?`                           | `(error: Error) => void` | `() => {}`  | Fires when one of the `onPrev` or `onNext` functions fails                                                                  |
 | `onFinally?`                         | `() => void`             | `() => {}`  | Fires when one of the `onPrev` or `onNext` functions completes (good tone for hiding the loading)                           |
 | `...props?`                          | `HTMLAttributes`         | `undefined` | HTML element attributes                                                                                                     |
