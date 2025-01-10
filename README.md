@@ -34,7 +34,7 @@ The `onPrevChunk` and `onNextChunk` scroll events will be blocked until the prev
 	import { InfiniteScroll } from 'infinite-scroll-svelte';
 
 	const items = $state<number[]>([...Array(100).keys()]);
-	const handleNext = async () => items.push(...[Math.random()]);
+	const handleNext = async () => items.push(Math.random());
 </script>
 
 <InfiniteScroll
