@@ -1,0 +1,1 @@
+export const ONE_SECOND: number = 1000;
