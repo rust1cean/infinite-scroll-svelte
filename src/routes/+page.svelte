@@ -52,11 +52,11 @@
 	{/if}
 	<InfiniteScroll
 		class="grid size-full grid-cols-4 justify-items-center gap-4 rounded-3xl border-2 p-2"
-		onPrevChunk={handlePrev}
-		onNextChunk={handleNext}
+		onPrev={handlePrev}
+		onNext={handleNext}
 		onError={handleError}
 		onFinally={onLoadEnd}
-		throttleMs={15}
+		throttleInMs={15}
 	>
 		{#each items as item (item)}
 			<div

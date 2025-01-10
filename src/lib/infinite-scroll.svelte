@@ -5,40 +5,48 @@
 	import { type Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 
-	import { genRandomId, promiseWithTimeout } from './utils.js';
+	import { genRandomId, promiseWithRejectTimeout } from './utils.js';
 	import { Throttle } from './throttle.js';
 	import { Locker } from './locker.js';
-	import type {
-		InfiniteScrollEvents,
-		InfiniteScrollScrollBars,
-		InfiniteScrollThreshold
-	} from './types/events.js';
 
 	const {
 		children,
-		onPrevChunk = async () => {},
-		onNextChunk = async () => {},
+		onPrev = async () => {},
+		onNext = async () => {},
 		scrollX = false,
 		scrollY = true,
 		thresholdPrev = 120, // in px
 		thresholdNext = 120, // in px
-		throttleMs = 150, // in ms
-		promiseTimeoutInSecs = 5, // in secs
+		throttleInMs = 150,
+		promiseTimeoutInSecs = 5,
 		onError = () => {},
 		onFinally = () => {},
 		...props
 	}: {
 		children: Snippet;
-		throttleMs?: number;
+		throttleInMs?: number;
 		promiseTimeoutInSecs?: number;
-	} & InfiniteScrollEvents &
-		InfiniteScrollScrollBars &
-		InfiniteScrollThreshold &
-		HTMLAttributes<any> = $props();
+
+		// IMPORTANT
+		/**
+		 * The scroll event will be blocked
+		 * until one of the methods is executed.
+		 */
+		onPrev?: () => Promise<any>;
+		onNext?: () => Promise<any>;
+		// IMPORTANT
+
+		onError?: (error: Error) => any;
+		onFinally?: () => any;
+		scrollX?: boolean;
+		scrollY?: boolean;
+		thresholdPrev?: number;
+		thresholdNext?: number;
+	} & HTMLAttributes<any> = $props();
 
 	type AbstractScrollDirection = 'back' | 'stay' | 'next';
 
-	let throttle = new Throttle(throttleMs);
+	let throttle = new Throttle(throttleInMs);
 	let scrollHandlerLock = new Locker(false);
 	let lastScrollTopPosition: number = 0;
 	let rootEl: HTMLElement | undefined;
@@ -48,8 +56,9 @@
 	const increaseScrollDepth = () => (scrollDepth += 1);
 
 	const handleScroll = (event: Event) => {
-		if (throttle.throttling || scrollHandlerLock.isLocked) return;
+		if (throttle.isThrottling || scrollHandlerLock.isLocked) return;
 
+		scrollHandlerLock.lock();
 		possibleCallAtThreshold(event.target as HTMLElement)
 			.catch((error) => {
 				console.error(error);
@@ -68,11 +77,9 @@
 		const scrollDirection = getAbstractScrollDirection(currentScrollTop);
 
 		if (scrollDirection === 'back' && currentScrollTop <= scrollTopMax && scrollDepth > 0) {
-			scrollHandlerLock.lock();
-			await onThresholdPrev();
+			await onthresholdPrev();
 		}
 		if (scrollDirection === 'next' && currentScrollBot >= scrollBotMax) {
-			scrollHandlerLock.lock();
 			await onThresholdNext();
 		}
 
@@ -98,13 +105,13 @@
 		return { scrollTopMax, scrollBotMax };
 	};
 
-	const onThresholdPrev = async () => {
+	const onthresholdPrev = async () => {
 		decreaseScrollDepth();
 
 		const prevChild = rootEl?.firstElementChild as HTMLElement | undefined;
 		const childId = prevChild == null ? null : markElementByRandomId(prevChild);
 
-		await promiseWithTimeout(onPrevChunk, promiseTimeoutInSecs);
+		await promiseWithRejectTimeout(onPrev, promiseTimeoutInSecs);
 
 		const currChild = rootEl?.firstElementChild as HTMLElement | undefined;
 		if (rootEl && prevChild && childId && currChild) {
@@ -123,7 +130,7 @@
 	const onThresholdNext = async () => {
 		increaseScrollDepth();
 
-		await promiseWithTimeout(onNextChunk, promiseTimeoutInSecs);
+		await promiseWithRejectTimeout(onNext, promiseTimeoutInSecs);
 	};
 
 	const getAbstractScrollDirection = (currentScrollTop: number): AbstractScrollDirection => {

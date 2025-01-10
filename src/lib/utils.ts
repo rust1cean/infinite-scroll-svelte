@@ -2,7 +2,7 @@ import { ONE_SECOND } from './constants.js';
 
 export const genRandomId = (): string => Math.round(Math.random() * 10_000).toString();
 
-export const promiseWithTimeout = (fn: () => Promise<any>, timeoutFailInSecs: number) => {
+export const promiseWithRejectTimeout = (fn: () => Promise<any>, timeoutFailInSecs: number) => {
 	return new Promise((res, rej) => {
 		const finalTimeout = timeoutFailInSecs * ONE_SECOND;
 		const timer = setTimeout(() => {

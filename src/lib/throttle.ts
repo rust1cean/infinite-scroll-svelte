@@ -4,7 +4,7 @@ export class Throttle {
 		private nextThrottleTime: number = performance.now()
 	) {}
 
-	get throttling(): boolean {
+	get isThrottling(): boolean {
 		const currentTime = performance.now();
 		const mustThrottle = currentTime < this.nextThrottleTime;
 
