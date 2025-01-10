@@ -8,9 +8,9 @@ Wrapper that fires events when the user has scrolled it to the beginning or end
 
 ## Important
 
-The `onPrev` and `onNext` scroll events will be blocked until the previous ones are executed.
+`onPrev` and `onNext` **will block** the event handler until one of the them completes.
 
-Also: the first and last elements are temporarily marked with \[data-infinite-scroll-xxxxx\] identifiers for internal work, so **only sequence elements should be inside** `<InfiniteScroll />`:
+Before you begin, the first and last elements are temporarily marked with \[data-infinite-scroll-xxxxx\] identifiers for internal work, so **only sequence elements should be inside** `<InfiniteScroll />`:
 
 ### Incorrect usage
 
