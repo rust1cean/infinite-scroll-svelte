@@ -8,7 +8,31 @@ Wrapper that fires events when the user has scrolled it to the beginning or end
 
 ## Important
 
-The `onPrevChunk` and `onNextChunk` scroll events will be blocked until the previous ones are executed
+The `onPrevChunk` and `onNextChunk` scroll events will be blocked until the previous ones are executed.
+
+Also: the first and last elements are temporarily marked with \[data-infinite-scroll-xxxxx\] identifiers for internal work, so **only sequence elements should be inside** `<InfiniteScroll />`:
+
+### Incorrect usage
+```svelte
+<InfiniteScroll>
+	<h1>Title</h1>
+	{#each items as item (item)}
+		{item}
+	{/each}
+</InfiniteScroll>
+```
+
+### Correct usage
+```svelte
+<SomeWrapper>
+	<h1>Title</h1>
+	<InfiniteScroll>
+		{#each items as item (item)}
+			{item}
+		{/each}
+	</InfiniteScroll>
+</SomeWrapper>
+```
 
 ## Props
 

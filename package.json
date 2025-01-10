@@ -1,7 +1,7 @@
 {
 	"name": "infinite-scroll-svelte",
 	"license": "MIT",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/rust1cean/infinite-scroll-svelte.git"

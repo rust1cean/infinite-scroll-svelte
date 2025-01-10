@@ -139,11 +139,11 @@
 	};
 
 	const setElementDataId = (element: HTMLElement, id: string) => {
-		element.dataset.lazyScrollId = id;
+		element.dataset.infiniteScrollId = id;
 	};
 	const getElementByDataId = (id: string) =>
-		document.querySelector(`[data-lazy-scroll-id="${id}"]`);
-	const removeElementDataId = (element: HTMLElement) => delete element.dataset.lazyScrollId;
+		document.querySelector(`[data-infinite-scroll-id="${id}"]`);
+	const removeElementDataId = (element: HTMLElement) => delete element.dataset.infiniteScrollId;
 </script>
 
 <div
