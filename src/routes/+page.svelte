@@ -55,7 +55,7 @@
 		onPrev={handlePrev}
 		onNext={handleNext}
 		onError={handleError}
-		onFinally={onLoadEnd}
+		onUnlock={onLoadEnd}
 		throttleInMs={15}
 	>
 		{#each items as item (item)}

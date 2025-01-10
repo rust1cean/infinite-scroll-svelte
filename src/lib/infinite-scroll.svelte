@@ -20,7 +20,8 @@
 		throttleInMs = 150,
 		promiseRejectTimeoutInSecs = 5,
 		onError = () => {},
-		onFinally = () => {},
+		onLock = () => {},
+		onUnlock = () => {},
 		...props
 	}: {
 		children: Snippet;
@@ -37,7 +38,8 @@
 		// IMPORTANT
 
 		onError?: (error: Error) => any;
-		onFinally?: () => any;
+		onLock?: () => any;
+		onUnlock?: () => any;
 		scrollX?: boolean;
 		scrollY?: boolean;
 		thresholdPrev?: number;
@@ -59,6 +61,7 @@
 		if (throttle.isThrottling || scrollHandlerLock.isLocked) return;
 
 		scrollHandlerLock.lock();
+		onLock();
 		possibleCallAtThreshold(event.target as HTMLElement)
 			.catch((error) => {
 				console.error(error);
@@ -66,7 +69,7 @@
 			})
 			.finally(() => {
 				scrollHandlerLock.unlock();
-				onFinally();
+				onUnlock();
 			});
 	};
 

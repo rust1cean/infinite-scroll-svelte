@@ -36,20 +36,21 @@ Correct
 
 ## Props
 
-| Property                             | Type                     | Default     | Description                                                                                                                 |
-| ------------------------------------ | ------------------------ | ----------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `children`                           | `Snippet`                |             |                                                                                                                             |
-| `onPrev?`                            | `async fn()`             | `() => {}`  | Occurs when the user scrolls the container to the top                                                                       |
-| `onNext?`                            | `async fn()`             | `() => {}`  | Occurs when the user scrolls to the end of the container                                                                    |
-| `scrollX?`                           | `boolean`                | `false`     | Horizontal scrolling                                                                                                        |
-| `scrollY?`                           | `boolean`                | `true`      | Vertical scrolling                                                                                                          |
-| `thresholdPrevInPx?` (in pixels)     | `number`                 | `120`       | Container start threshold for calling `onPrev`                                                                              |
-| `thresholdNext?` (in pixels)         | `number`                 | `120`       | Container end threshold for calling `onNext`                                                                                |
-| `throttleInMs?` (in milliseconds)    | `number`                 | `150`       | Interval between `onscroll` event calls                                                                                     |
-| `promiseRejectTimeoutInSecs?` (in seconds) | `number`                 | `5`         | Tthe maximum time to wait for the `onPrev` and `onNext` functions, if the timeout is exceeded, the onError event will occur |
-| `onError?`                           | `(error: Error) => void` | `() => {}`  | Fires when one of the `onPrev` or `onNext` functions fails                                                                  |
-| `onFinally?`                         | `() => void`             | `() => {}`  | Fires when one of the `onPrev` or `onNext` functions completes (good tone for hiding the loading)                           |
-| `...props?`                          | `HTMLAttributes`         | `undefined` | HTML element attributes                                                                                                     |
+| Property                          | Type                     | Default     | Description                                                                                                                 |
+| --------------------------------- | ------------------------ | ----------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `children`                        | `Snippet`                |             |                                                                                                                             |
+| `onPrev?`                         | `async fn()`             | `() => {}`  | Occurs when the user scrolls the container to the top                                                                       |
+| `onNext?`                         | `async fn()`             | `() => {}`  | Occurs when the user scrolls to the end of the container                                                                    |
+| `scrollX?`                        | `boolean`                | `false`     | Horizontal scrolling                                                                                                        |
+| `scrollY?`                        | `boolean`                | `true`      | Vertical scrolling                                                                                                          |
+| `thresholdPrevInPx?` (in pixels)  | `number`                 | `120`       | Container start threshold for calling `onPrev`                                                                              |
+| `thresholdNext?` (in pixels)      | `number`                 | `120`       | Container end threshold for calling `onNext`                                                                                |
+| `throttleInMs?` (in milliseconds) | `number`                 | `150`       | Interval between `onscroll` event calls                                                                                     |
+| `promiseRejectTimeoutInSecs?`     | `number`                 | `5`         | Tthe maximum time to wait for the `onPrev` and `onNext` functions, if the timeout is exceeded, the onError event will occur |
+| `onLock?`                         | `() => void`             | `() => {}`  | Fires when one of the `onPrev` or `onNext` functions called                                                                 |
+| `onUnlock?`                       | `() => void`             | `() => {}`  | Fires when one of the `onPrev` or `onNext` functions completes (good tone for hiding the loading)                           |
+| `onError?`                        | `(error: Error) => void` | `() => {}`  | Fires when one of the `onPrev` or `onNext` functions fails                                                                  |
+| `...props?`                       | `HTMLAttributes`         | `undefined` | HTML element attributes                                                                                                     |
 
 ## Example
 
